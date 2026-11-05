@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Free WhatsApp Link Generator with Message (wa.me) — single or bulk</title>
+<meta name="description" content="Create a WhatsApp click-to-chat link (wa.me) with a pre-filled message in seconds. Paste a list of numbers to make many links at once. Free, no signup, works in your browser.">
+<link rel="canonical" href="https://kamruppolytechnic4-arch.github.io/nudgebook/tools/whatsapp-link-generator/">
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<meta property="og:title" content="Free WhatsApp Link Generator — single or bulk">
+<meta property="og:description" content="Make wa.me links with a pre-filled message. Paste a list to make many at once.">
+<meta property="og:image" content="https://kamruppolytechnic4-arch.github.io/nudgebook/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+:root{--bg:#fff;--bg2:#f5f7fa;--ink:#0f1720;--ink2:#46566a;--line:#e2e8f0;--accent:#ff7a1a;--go:#00a870}
+@media (prefers-color-scheme: dark){:root{--bg:#0f1720;--bg2:#18222e;--ink:#e8eef6;--ink2:#9fb1c4;--line:#2a3a4d;--go:#00c281}}
+*{box-sizing:border-box} html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:820px;margin:0 auto;padding:0 18px}
+header{display:flex;align-items:center;gap:10px;padding:16px 0}
+header a{text-decoration:none;color:inherit;font-weight:800}
+header .r{margin-left:auto;font-weight:600;font-size:14px;color:var(--ink2)}
+h1{font-size:clamp(28px,4.6vw,40px);line-height:1.15;margin:16px 0 10px}
+h2{font-size:24px;margin:40px 0 10px}
+p.lead{color:var(--ink2);font-size:18px;margin:0 0 24px}
+.card{background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:18px}
+label{display:block;font-weight:700;font-size:14px;margin:12px 0 6px}
+input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit}
+textarea{min-height:110px;resize:vertical}
+.row{display:grid;grid-template-columns:140px 1fr;gap:10px}
+@media(max-width:520px){.row{grid-template-columns:1fr}}
+.out{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.out input{flex:1;min-width:200px;font-family:ui-monospace,Consolas,monospace;font-size:14px}
+.btn{border:0;border-radius:10px;padding:12px 16px;font-weight:800;cursor:pointer;background:var(--accent);color:#12202c;text-decoration:none;display:inline-block}
+.btn.alt{background:var(--go);color:#07231a}
+.btn.sm{padding:8px 12px;font-size:13px}
+.tabs{display:flex;gap:8px;margin-bottom:14px}
+.tab{border:1px solid var(--line);background:transparent;color:var(--ink2);padding:9px 16px;border-radius:30px;font-weight:700;cursor:pointer}
+.tab.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+table{width:100%;border-collapse:collapse;font-size:14px;margin-top:14px}
+td,th{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+td.l{font-family:ui-monospace,Consolas,monospace;font-size:12.5px;word-break:break-all}
+.hint{color:var(--ink2);font-size:14px}
+.promo{border:2px solid var(--accent);border-radius:16px;padding:20px;margin:30px 0}
+.promo h3{margin:0 0 6px}
+.err{color:#e5484d;font-weight:700;font-size:14px;margin-top:8px}
+footer{padding:30px 0 50px;color:var(--ink2);font-size:14px;border-top:1px solid var(--line);margin-top:40px}
+footer a{color:inherit;margin-right:14px}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+ {"@type":"Question","name":"How do I make a WhatsApp link with a message?","acceptedAnswer":{"@type":"Answer","text":"Use https://wa.me/ followed by the full phone number with country code and no plus sign, then ?text= and your message encoded for a URL. This tool builds it for you."}},
+ {"@type":"Question","name":"Do I need the plus sign or leading zero?","acceptedAnswer":{"@type":"Answer","text":"No. wa.me links use the country code and number only, with no plus sign, spaces, dashes or leading zero."}},
+ {"@type":"Question","name":"Can I make WhatsApp links for many numbers at once?","acceptedAnswer":{"@type":"Answer","text":"Yes. Use the Bulk tab, paste one number per line (optionally with a name), and the tool makes a link for each one with the name filled into your message."}}
+]}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header><img src="../../icon.svg" width="28" height="28" alt=""><a href="../../">Nudgebook</a><a class="r" href="../../app/">Follow-up app →</a></header>
+
+  <h1>WhatsApp link generator</h1>
+  <p class="lead">Make a click-to-chat link with your message already typed. Put it in your Instagram bio, a website button, an email, or a QR code. Free, no signup.</p>
+
+  <div class="tabs">
+    <button class="tab on" id="tOne" onclick="show('one')">One link</button>
+    <button class="tab" id="tBulk" onclick="show('bulk')">Many numbers at once</button>
+  </div>
+
+  <div class="card" id="one">
+    <div class="row">
+      <div><label for="cc">Country code</label><input id="cc" inputmode="numeric" placeholder="1" oninput="build()"></div>
+      <div><label for="ph">Phone number</label><input id="ph" inputmode="tel" placeholder="415 555 0134" oninput="build()"></div>
+    </div>
+    <label for="msg">Message (optional)</label>
+    <textarea id="msg" oninput="build()" placeholder="Hi! I saw your post and would like a price for..."></textarea>
+    <div class="err" id="err"></div>
+    <div class="out">
+      <input id="link" readonly aria-label="Your WhatsApp link">
+      <button class="btn" onclick="copy('link')">Copy</button>
+      <a class="btn alt" id="test" href="#" target="_blank" rel="noopener">Test it</a>
+    </div>
+    <p class="hint">Leave the number empty to make a link that lets the person pick who to send the message to.</p>
+  </div>
+
+  <div class="card" id="bulk" style="display:none">
+    <label for="list">One per line: <b>number</b> or <b>name, number</b></label>
+    <textarea id="list" placeholder="Maria, +1 415 555 0134&#10;Sam, +234 803 555 0199&#10;+44 7700 900123"></textarea>
+    <div class="row">
+      <div><label for="bcc">Default country code</label><input id="bcc" inputmode="numeric" placeholder="1"></div>
+      <div><label for="bmsg">Message — {name} is replaced</label><input id="bmsg" placeholder="Hi {name}, just following up on your enquiry."></div>
+    </div>
+    <div class="out"><button class="btn" onclick="bulk()">Make links</button><button class="btn sm" style="background:var(--bg);color:var(--ink);border:1px solid var(--line)" onclick="csv()">Download CSV</button></div>
+    <div id="bout"></div>
+  </div>
+
+  <div class="promo">
+    <h3>Sending follow-ups by hand every day?</h3>
+    <p class="hint" style="margin:0 0 12px">Nudgebook remembers who to chase, picks the right message, and opens WhatsApp for you. Free for 14 days.</p>
+    <a class="btn" href="../../app/">Try the follow-up app</a>
+  </div>
+
+  <h2>How a WhatsApp link works</h2>
+  <p>A WhatsApp link looks like <code>https://wa.me/14155550134?text=Hello</code>. When someone taps it, WhatsApp opens a chat with that number and the message ready to send. It works on phones and on WhatsApp Web.</p>
+  <h2>Rules for the number</h2>
+  <ul>
+    <li>Start with the <b>country code</b> (1 for USA/Canada, 44 for UK, 91 for India, 234 for Nigeria).</li>
+    <li>No <b>+</b> sign, spaces, brackets or dashes.</li>
+    <li>Drop the <b>leading 0</b> of a local number. UK 07700 900123 becomes 447700900123.</li>
+  </ul>
+  <h2>Where to use it</h2>
+  <ul>
+    <li>Instagram, TikTok or Facebook bio: “Message us on WhatsApp”.</li>
+    <li>A “Chat with us” button on your website.</li>
+    <li>Printed on a flyer or menu as a QR code.</li>
+    <li>In a follow-up email so customers reply in one tap.</li>
+  </ul>
+
+  <footer>
+    <a href="../../">Nudgebook</a><a href="../follow-up-message-templates/">Follow-up message templates</a><a href="../../privacy.html">Privacy</a>
+    <div style="margin-top:10px">Not affiliated with WhatsApp or Meta. Everything runs in your browser — numbers are never sent anywhere.</div>
+  </footer>
+</div>
+
+<script>
+var rows = [];
+function digits(s){ return String(s||'').replace(/[^0-9]/g,''); }
+function full(cc, ph){
+  var raw = String(ph||'').trim(), d = digits(raw);
+  if(!d) return '';
+  if(raw.charAt(0)==='+') return d;
+  if(d.slice(0,2)==='00') return d.slice(2);
+  d = d.replace(/^0+/,'');
+  var c = digits(cc);
+  if(c && d.length <= 10) d = c + d;   // longer than 10 = country code already typed
+  return d;
+}
+function make(num, text){
+  var u = 'https://wa.me/' + (num||'');
+  if(text) u += '?text=' + encodeURIComponent(text);
+  return u;
+}
+function build(){
+  var num = full(document.getElementById('cc').value, document.getElementById('ph').value);
+  var err = '';
+  if(num && (num.length < 8 || num.length > 15)) err = 'That number looks too ' + (num.length<8?'short':'long') + '. Check the country code.';
+  document.getElementById('err').textContent = err;
+  var u = make(num, document.getElementById('msg').value);
+  document.getElementById('link').value = u;
+  document.getElementById('test').href = u;
+}
+function copy(id){
+  var el = document.getElementById(id); el.select();
+  (navigator.clipboard ? navigator.clipboard.writeText(el.value) : Promise.reject()).catch(function(){ document.execCommand('copy'); });
+}
+function show(t){
+  document.getElementById('one').style.display = t==='one'?'block':'none';
+  document.getElementById('bulk').style.display = t==='bulk'?'block':'none';
+  document.getElementById('tOne').classList.toggle('on', t==='one');
+  document.getElementById('tBulk').classList.toggle('on', t==='bulk');
+}
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function bulk(){
+  var cc = document.getElementById('bcc').value, tpl = document.getElementById('bmsg').value;
+  rows = [];
+  document.getElementById('list').value.split('\n').forEach(function(line){
+    line = line.trim(); if(!line) return;
+    var p = line.split(','), name = '', ph = line;
+    if(p.length > 1){ name = p[0].trim(); ph = p.slice(1).join(','); }
+    var num = full(cc, ph);
+    if(!num) return;
+    rows.push({name:name, num:num, link:make(num, tpl.replace(/\{name\}/g, name || 'there'))});
+  });
+  document.getElementById('bout').innerHTML = rows.length
+    ? '<table><tr><th>Name</th><th>Link</th><th></th></tr>' + rows.map(function(r){
+        return '<tr><td>'+esc(r.name||'—')+'</td><td class="l">'+esc(r.link)+'</td><td><a class="btn sm alt" target="_blank" rel="noopener" href="'+esc(r.link)+'">Open</a></td></tr>';
+      }).join('') + '</table><p class="hint">'+rows.length+' links. Want the app to remember who you messaged and when to follow up? <a href="../../app/">Try Nudgebook</a>.</p>'
+    : '<p class="err">No numbers found. Put one per line.</p>';
+}
+function csv(){
+  if(!rows.length) bulk();
+  if(!rows.length) return;
+  var t = 'Name,Number,Link\n' + rows.map(function(r){ return ['"'+r.name.replace(/"/g,'""')+'"', r.num, r.link].join(','); }).join('\n');
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([t],{type:'text/csv'})); a.download = 'whatsapp-links.csv';
+  document.body.appendChild(a); a.click(); a.remove();
+}
+/* Pre-fill the country code from the browser's language region. */
+(function(){
+  var m = {US:'1',CA:'1',GB:'44',IN:'91',AU:'61',NZ:'64',NG:'234',KE:'254',ZA:'27',GH:'233',AE:'971',SA:'966',SG:'65',MY:'60',ID:'62',PH:'63',PK:'92',BD:'880',BR:'55',MX:'52',DE:'49',FR:'33',ES:'34',IT:'39',NL:'31',IE:'353',TR:'90',EG:'20'};
+  var r = (String(navigator.language||'').match(/-([A-Za-z]{2})$/)||[])[1];
+  var c = (r && m[r.toUpperCase()]) || '';
+  document.getElementById('cc').value = c; document.getElementById('bcc').value = c;
+  build();
+})();
+</script>
+</body>
+</html>

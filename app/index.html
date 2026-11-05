@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f1720">
+<title>Nudgebook — your follow-up list for today</title>
+<meta name="description" content="Nudgebook tells you who to follow up with today and opens WhatsApp with the message already typed. Works in your browser, no signup.">
+<meta name="robots" content="noindex">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="../icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../icon-192.png">
+<script src="../config.js"></script>
+<style>
+:root{
+  --bg:#0f1720; --card:#18222e; --card2:#1f2b3a; --line:#2a3a4d;
+  --txt:#e8eef6; --dim:#8fa3b8; --accent:#ff7a1a; --accent2:#00c281;
+  --danger:#ff4d5e; --warn:#ffc548; --radius:14px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--txt);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+  font-size:15px; line-height:1.45; padding-bottom:78px;
+}
+a{color:inherit;text-decoration:none}
+button,input,select,textarea{font-family:inherit;font-size:15px}
+
+/* ---------- header ---------- */
+header{
+  position:sticky;top:0;z-index:20;background:var(--bg);
+  border-bottom:1px solid var(--line); padding:12px 16px 10px;
+}
+.brandrow{display:flex;align-items:center;gap:10px}
+.logo{
+  width:32px;height:32px;border-radius:9px;background:var(--accent);
+  display:grid;place-items:center;font-weight:800;color:#12202c;font-size:15px;flex:0 0 auto;
+}
+.brandname{font-weight:800;font-size:18px;letter-spacing:.2px}
+.brandsub{font-size:11px;color:var(--dim);margin-top:-2px}
+.hstat{margin-left:auto;text-align:right}
+.hstat b{display:block;font-size:16px;color:var(--accent2);line-height:1.1}
+.hstat span{font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.6px}
+
+/* ---------- layout ---------- */
+main{padding:14px 14px 20px;max-width:760px;margin:0 auto}
+.view{display:none}
+.view.on{display:block}
+h2{font-size:15px;margin:18px 0 8px;letter-spacing:.3px}
+h2:first-child{margin-top:2px}
+.muted{color:var(--dim);font-size:13px}
+.center{text-align:center}
+
+.card{
+  background:var(--card);border:1px solid var(--line);
+  border-radius:var(--radius);padding:14px;margin-bottom:10px;
+}
+.row{display:flex;gap:10px;align-items:center}
+.grow{flex:1;min-width:0}
+.stack{display:flex;flex-direction:column;gap:10px}
+.trunc{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ---------- buttons ---------- */
+.btn{
+  border:0;border-radius:10px;padding:11px 14px;font-weight:700;
+  background:var(--card2);color:var(--txt);cursor:pointer;display:inline-flex;
+  align-items:center;justify-content:center;gap:7px;
+}
+.btn:active{transform:scale(.98)}
+.btn.pri{background:var(--accent);color:#12202c}
+.btn.go{background:var(--accent2);color:#07231a}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--dim);font-weight:600}
+.btn.sm{padding:8px 11px;font-size:13px;border-radius:9px}
+.btn.wide{width:100%}
+.btn.danger{background:transparent;border:1px solid var(--danger);color:var(--danger)}
+
+/* ---------- forms ---------- */
+label{display:block;font-size:12px;color:var(--dim);margin:10px 0 4px;letter-spacing:.3px}
+input,select,textarea{
+  width:100%;background:var(--card2);border:1px solid var(--line);color:var(--txt);
+  border-radius:10px;padding:11px 12px;outline:none;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+textarea{min-height:96px;resize:vertical;line-height:1.5}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* ---------- lead card ---------- */
+.lead{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:12px;margin-bottom:9px;border-left:3px solid var(--line);
+}
+.lead.due{border-left-color:var(--accent)}
+.lead.late{border-left-color:var(--danger)}
+.lead.won{border-left-color:var(--accent2);opacity:.75}
+.lead.lost{opacity:.45}
+.lead h3{margin:0;font-size:15.5px;font-weight:700}
+.lead .sub{font-size:12.5px;color:var(--dim);margin-top:1px}
+.pill{
+  font-size:10px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;
+  padding:3px 8px;border-radius:20px;background:var(--card2);color:var(--dim);white-space:nowrap;
+}
+.pill.due{background:rgba(255,122,26,.16);color:var(--accent)}
+.pill.late{background:rgba(255,77,94,.16);color:var(--danger)}
+.pill.won{background:rgba(0,194,129,.16);color:var(--accent2)}
+.acts{display:flex;gap:7px;margin-top:11px;flex-wrap:wrap}
+.acts .btn{flex:1;min-width:88px}
+
+/* ---------- misc ---------- */
+.empty{text-align:center;color:var(--dim);padding:34px 16px;font-size:14px}
+.empty .big{font-size:34px;display:block;margin-bottom:8px;opacity:.5}
+.bar{height:9px;background:var(--card2);border-radius:9px;overflow:hidden;margin:9px 0 6px}
+.bar i{display:block;height:100%;background:var(--accent2);border-radius:9px;transition:width .35s}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+.kpi b{display:block;font-size:20px;font-weight:800}
+.kpi span{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px}
+.funnel div{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px}
+.funnel div:last-child{border:0}
+.chips{display:flex;gap:7px;overflow-x:auto;padding-bottom:4px;margin-bottom:10px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{
+  border:1px solid var(--line);background:transparent;color:var(--dim);
+  padding:7px 13px;border-radius:20px;font-size:13px;white-space:nowrap;cursor:pointer;font-weight:600;
+}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#12202c}
+.note{background:var(--card2);border-radius:10px;padding:10px 12px;font-size:13px;color:var(--dim);margin-bottom:10px}
+.msgbox{
+  background:var(--card2);border:1px dashed var(--line);border-radius:10px;
+  padding:11px 12px;font-size:13.5px;white-space:pre-wrap;line-height:1.5;margin-top:10px;
+}
+.hist{font-size:12.5px;color:var(--dim);border-left:2px solid var(--line);padding-left:10px;margin:5px 0}
+
+/* ---------- tabs ---------- */
+nav{
+  position:fixed;bottom:0;left:0;right:0;z-index:30;display:flex;
+  background:var(--card);border-top:1px solid var(--line);
+  padding:7px 4px calc(7px + env(safe-area-inset-bottom));
+}
+nav button{
+  flex:1;background:none;border:0;color:var(--dim);font-size:10.5px;font-weight:700;
+  padding:5px 2px;cursor:pointer;letter-spacing:.3px;
+}
+nav button i{display:block;font-size:19px;font-style:normal;margin-bottom:2px;line-height:1}
+nav button.on{color:var(--accent)}
+
+/* ---------- modal ---------- */
+.modal{position:fixed;inset:0;background:rgba(6,11,17,.82);z-index:50;display:none;
+  align-items:flex-end;justify-content:center}
+.modal.on{display:flex}
+.sheet{
+  background:var(--card);width:100%;max-width:760px;max-height:92vh;overflow-y:auto;
+  border-radius:18px 18px 0 0;padding:16px 16px calc(20px + env(safe-area-inset-bottom));
+  border-top:1px solid var(--line);
+}
+.sheet h3{margin:0 0 4px;font-size:17px}
+@media(min-width:700px){
+  .modal{align-items:center}
+  .sheet{border-radius:18px;max-height:86vh}
+}
+.toast{
+  position:fixed;bottom:88px;left:50%;transform:translateX(-50%) translateY(12px);
+  background:var(--accent2);color:#07231a;font-weight:700;padding:10px 18px;border-radius:22px;
+  z-index:60;opacity:0;transition:.25s;pointer-events:none;font-size:14px;
+}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brandrow">
+    <a class="logo" id="logoBox" href="../" title="Nudgebook home">N</a>
+    <div class="grow trunc">
+      <div class="brandname trunc" id="brandName">Nudgebook</div>
+      <div class="brandsub trunc" id="brandSub">Follow up. Get paid.</div>
+    </div>
+    <div class="hstat"><b id="hMoney">0</b><span>won</span></div>
+  </div>
+</header>
+
+<div id="warn" style="display:none;background:var(--danger);color:#fff;padding:10px 16px;font-size:13px;font-weight:600">
+  This browser is not saving your data (private mode or storage blocked). Nothing will survive a refresh. Export a backup from Setup before you close this tab.
+</div>
+
+<main>
+
+  <div id="lockBox"></div>
+
+  <!-- ================= TODAY ================= -->
+  <section class="view on" id="v-today">
+    <div class="card" id="hello" style="display:none;border-color:var(--accent2)">
+      <b>Two quick things so your messages sound like you</b>
+      <label>Your first name</label>
+      <input id="h_me" placeholder="Alex">
+      <label>Your business name</label>
+      <input id="h_biz" placeholder="Alex Photography">
+      <button class="btn go wide" style="margin-top:12px" onclick="saveHello()">Save</button>
+    </div>
+    <div class="card">
+      <div class="row">
+        <div class="grow">
+          <div style="font-size:12px;color:var(--dim);text-transform:uppercase;letter-spacing:.6px">Goal</div>
+          <div style="font-size:22px;font-weight:800" id="goalLine">0 / 0</div>
+        </div>
+        <button class="btn sm ghost" onclick="go('setup')">Edit</button>
+      </div>
+      <div class="bar"><i id="goalBar" style="width:0%"></i></div>
+      <div class="muted" id="goalHint"></div>
+    </div>
+
+    <h2>Contact these today</h2>
+    <div id="todayList"></div>
+
+    <h2>Coming up</h2>
+    <div id="soonList"></div>
+  </section>
+
+  <!-- ================= LEADS ================= -->
+  <section class="view" id="v-leads">
+    <input id="search" placeholder="Search name, business, area, phone" oninput="render()" style="margin-bottom:10px">
+    <div class="chips" id="stageChips"></div>
+    <div id="leadList"></div>
+  </section>
+
+  <!-- ================= ADD ================= -->
+  <section class="view" id="v-add">
+    <h2>Add one lead</h2>
+    <div class="card">
+      <label>Name of person</label>
+      <input id="f_name" placeholder="Maria Lopez">
+      <label>Business</label>
+      <input id="f_biz" placeholder="Lopez Bakery">
+      <div class="two">
+        <div>
+          <label>Phone (WhatsApp)</label>
+          <input id="f_phone" inputmode="tel" placeholder="With country code, e.g. +44 7700 900123">
+        </div>
+        <div>
+          <label>Area / city</label>
+          <input id="f_area" placeholder="Downtown">
+        </div>
+      </div>
+      <div class="two">
+        <div>
+          <label>Deal value</label>
+          <input id="f_value" inputmode="numeric" placeholder="500">
+        </div>
+        <div>
+          <label>Where you found them</label>
+          <input id="f_source" placeholder="Instagram enquiry">
+        </div>
+      </div>
+      <label>Notes</label>
+      <textarea id="f_notes" style="min-height:64px" placeholder="Asked for prices for a 50-person order. Prefers mornings."></textarea>
+      <button class="btn pri wide" style="margin-top:14px" onclick="addOne()">Add lead</button>
+    </div>
+
+    <h2>Add a whole list at once</h2>
+    <div class="note">One lead per line. Use commas:<br><b>Name, Phone, Business, Area</b><br>Only the name is required.</div>
+    <div class="card">
+      <textarea id="bulk" placeholder="Maria Lopez, +1 415 555 0134, Lopez Bakery, Downtown
+Sam Okafor, +234 803 555 0199, Okafor Prints, Ikeja
+Priya Shah, +91 98765 43210, Shah Events, Andheri"></textarea>
+      <button class="btn wide" style="margin-top:10px" onclick="addBulk()">Import list</button>
+    </div>
+  </section>
+
+  <!-- ================= MONEY ================= -->
+  <section class="view" id="v-money">
+    <h2>Where you stand</h2>
+    <div class="kpis" id="kpis"></div>
+
+    <h2>Your funnel</h2>
+    <div class="card funnel" id="funnel"></div>
+
+    <h2>Won deals</h2>
+    <div id="wonList"></div>
+  </section>
+
+  <!-- ================= SETUP ================= -->
+  <section class="view" id="v-setup">
+    <h2>You</h2>
+    <div class="card">
+      <label>Your name</label>
+      <input id="s_me" oninput="saveSetup()">
+      <label>Your business name</label>
+      <input id="s_mybiz" oninput="saveSetup()">
+      <div class="two">
+        <div>
+          <label>Your country code</label>
+          <input id="s_cc" oninput="saveSetup()" placeholder="1">
+        </div>
+        <div>
+          <label>Currency sign</label>
+          <input id="s_cur" oninput="saveSetup()" placeholder="$">
+        </div>
+      </div>
+      <div class="muted" style="margin-top:6px">Country code is added to numbers you type without one.</div>
+      <div class="two">
+        <div>
+          <label>Your usual price</label>
+          <input id="s_price" inputmode="numeric" oninput="saveSetup()" placeholder="500">
+        </div>
+        <div>
+          <label>Money goal</label>
+          <input id="s_goal" inputmode="numeric" oninput="saveSetup()" placeholder="5000">
+        </div>
+      </div>
+      <label>Goal deadline</label>
+      <input id="s_deadline" type="date" oninput="saveSetup()">
+    </div>
+
+    <h2>Follow-up rhythm</h2>
+    <div class="note">After you contact someone, Nudgebook tells you to follow up again after these many days. Then it stops nagging you.</div>
+    <div class="card">
+      <label>Days between follow-ups</label>
+      <input id="s_cadence" oninput="saveSetup()" placeholder="2, 4, 7, 14">
+      <div class="muted" style="margin-top:6px">Comma separated. 4 numbers = 4 follow-ups, then the lead goes quiet on its own.</div>
+    </div>
+
+    <h2>Your messages</h2>
+    <div class="note">Use <b>{name}</b> <b>{business}</b> <b>{area}</b> <b>{me}</b> <b>{mybiz}</b> <b>{price}</b> — Nudgebook fills them in.</div>
+    <div id="tplList"></div>
+    <button class="btn wide" onclick="newTpl()">Add a message</button>
+
+    <h2>Subscription</h2>
+    <div class="card" id="subBox"></div>
+
+    <h2>Look</h2>
+    <div class="card">
+      <label>Main colour</label>
+      <input id="s_accent" type="color" oninput="saveSetup()" style="height:46px;padding:4px">
+    </div>
+
+    <h2>Backup</h2>
+    <div class="note">Your data lives only in this browser. Export a backup file before you clear browser data or change phone.</div>
+    <div class="card stack">
+      <button class="btn wide" onclick="exportData()">Export backup file</button>
+      <button class="btn wide" onclick="document.getElementById('imp').click()">Restore from backup</button>
+      <input type="file" id="imp" accept=".json" style="display:none" onchange="importData(this)">
+      <button class="btn wide" onclick="exportCsv()">Export leads as CSV</button>
+      <button class="btn wide danger" onclick="wipe()">Delete everything</button>
+    </div>
+    <div class="muted center" style="margin:16px 0 6px">Nudgebook &middot; your data never leaves this device &middot; <a href="../" style="text-decoration:underline">home</a></div>
+  </section>
+
+</main>
+
+<nav>
+  <button class="on" data-v="today" onclick="go('today')"><i>&#9673;</i>Today</button>
+  <button data-v="leads" onclick="go('leads')"><i>&#9776;</i>Leads</button>
+  <button data-v="add" onclick="go('add')"><i>&#43;</i>Add</button>
+  <button data-v="money" onclick="go('money')"><i>&#9632;</i>Money</button>
+  <button data-v="setup" onclick="go('setup')"><i>&#9881;</i>Setup</button>
+</nav>
+
+<div class="modal" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="sheet" id="sheet"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================
+   Nudgebook - lead follow-up app
+   Everything is stored in localStorage. No server, no internet.
+   ========================================================= */
+
+var KEY = 'nudgebook.v1';
+
+/* Payment settings live in ../config.js (window.NUDGE). */
+var CFG = window.NUDGE || {};
+var PAID_ON = !!(CFG.checkoutUrl && CFG.productId);
+var TRIAL_DAYS = CFG.trialDays || 14;
+
+var STAGES = [
+  {id:'new',      name:'Not contacted'},
+  {id:'contacted',name:'Contacted'},
+  {id:'replied',  name:'Replied'},
+  {id:'meeting',  name:'Meeting set'},
+  {id:'quoted',   name:'Price given'},
+  {id:'won',      name:'Won'},
+  {id:'lost',     name:'Dropped'}
+];
+var OPEN_STAGES = ['new','contacted','replied','meeting','quoted'];
+
+var DEFAULT_TPLS = [
+  {id:'t1', when:'seq', label:'First message', text:
+'Hi {name}, this is {me} from {mybiz}. Thanks for getting in touch!\n\nWhat is a good time for a quick chat, so I can give you an exact price?'},
+  {id:'t2', when:'seq', label:'Follow up 1', text:
+'Hi {name}, just checking you saw my last message. Happy to answer any questions.'},
+  {id:'t3', when:'seq', label:'Follow up 2', text:
+'Hi {name}, quick one: are you still looking for this?\n\nThe price is {price} and I can start this week.'},
+  {id:'t4', when:'seq', label:'Follow up 3 (last one)', text:
+'Hi {name}, I will stop messaging so I do not bother you.\n\nIf you need it later, just reply here. All the best!'},
+  {id:'t5', when:'meeting', label:'After a call or meeting', text:
+'Thanks for your time today, {name}.\n\nAs we discussed: {price}. Reply YES and I will get started.'},
+  {id:'t6', when:'quoted', label:'Chase the quote', text:
+'Hi {name}, did you get a chance to look at the quote for {price}?\n\nIf anything needs changing, tell me and I will sort it.'}
+];
+
+/* Guess country code + currency from the browser so a new user needs zero setup. */
+var REGION = (function(){
+  var map = {US:['1','$'],CA:['1','$'],GB:['44','£'],IN:['91','₹'],AU:['61','$'],NZ:['64','$'],
+    NG:['234','₦'],KE:['254','KSh '],ZA:['27','R'],GH:['233','GH₵'],AE:['971','AED '],SA:['966','SAR '],
+    SG:['65','$'],MY:['60','RM'],ID:['62','Rp'],PH:['63','₱'],PK:['92','Rs '],BD:['880','৳'],
+    BR:['55','R$'],MX:['52','$'],DE:['49','€'],FR:['33','€'],ES:['34','€'],IT:['39','€'],NL:['31','€'],
+    IE:['353','€'],TR:['90','₺'],EG:['20','E£']};
+  var langs = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language||''];
+  for(var i=0;i<langs.length;i++){
+    var m = String(langs[i]).match(/-([A-Za-z]{2})$/);
+    if(m && map[m[1].toUpperCase()]) return map[m[1].toUpperCase()];
+  }
+  return ['1','$'];
+})();
+
+var DEFAULTS = {
+  me:'', mybiz:'', cc:REGION[0], cur:REGION[1], price:500, goal:5000, deadline:'',
+  cadence:'2, 4, 7, 14', accent:'#ff7a1a'
+};
+
+var db = load();
+var filter = 'open';
+var view = 'today';
+
+/* =========================================================
+   SUBSCRIPTION
+   Buyers pay on Gumroad / Lemon Squeezy and get a licence key by
+   email. We check that key against the payment service from the
+   browser (both allow it). If the subscription stops, the next
+   check fails and the app locks again. Checks run at most once a
+   day; if the person is offline we trust the last good check for
+   7 days. Data never leaves the device — only the key is sent.
+   ========================================================= */
+var RECHECK_MS = 24*3600*1000;
+var GRACE_MS   = 7*24*3600*1000;
+
+function verifyKey(key){
+  key = String(key||'').trim();
+  if(CFG.provider === 'lemonsqueezy'){
+    return fetch('https://api.lemonsqueezy.com/v1/licenses/validate', {
+      method:'POST', headers:{'Accept':'application/json'},
+      body:new URLSearchParams({license_key:key})
+    }).then(function(r){ return r.json(); }).then(function(j){
+      if(!j || !j.valid) return {ok:false, reason:(j && j.error) || 'That key was not found.'};
+      if(CFG.productId && j.meta && String(j.meta.product_id) !== String(CFG.productId))
+        return {ok:false, reason:'That key is for a different product.'};
+      if(j.license_key && j.license_key.status !== 'active')
+        return {ok:false, reason:'That subscription is ' + j.license_key.status + '.'};
+      return {ok:true, email:(j.meta && j.meta.customer_email) || ''};
+    });
+  }
+  return fetch('https://api.gumroad.com/v2/licenses/verify', {
+    method:'POST',
+    body:new URLSearchParams({product_id:CFG.productId, license_key:key, increment_uses_count:'false'})
+  }).then(function(r){ return r.json(); }).then(function(j){
+    if(!j || !j.success) return {ok:false, reason:(j && j.message) || 'That key was not found.'};
+    var p = j.purchase || {};
+    if(p.refunded || p.chargebacked || p.disputed) return {ok:false, reason:'That purchase was refunded.'};
+    if(p.subscription_ended_at || p.subscription_failed_at)
+      return {ok:false, reason:'That subscription has ended. Subscribe again to unlock.'};
+    return {ok:true, email:p.email || ''};
+  });
+}
+
+/* state: free | trial | active | stale | trialover | ended */
+function licState(){
+  if(!db.trialStart){ db.trialStart = todayStr(); save(); }
+  var l = db.lic;
+  if(l && l.key){
+    if(l.ok){
+      var age = Date.now() - (l.checkedAt||0);
+      return {state: age < GRACE_MS ? 'active' : 'stale'};
+    }
+  }
+  if(!PAID_ON) return {state:'free'};
+  var trialLeft = TRIAL_DAYS - daysBetween(db.trialStart, todayStr());
+  if(trialLeft > 0) return {state:'trial', left:trialLeft};
+  return {state: (l && l.key) ? 'ended' : 'trialover', left:0};
+}
+function isLocked(){
+  var s = licState().state;
+  return s === 'trialover' || s === 'ended' || s === 'stale';
+}
+
+function activate(sfx){
+  sfx = sfx || '';
+  var inp = document.getElementById('lic_key'+sfx);
+  var btn = document.getElementById('lic_btn'+sfx);
+  var key = inp ? inp.value.trim() : '';
+  if(!key){ alert('Paste the licence key from your receipt email.'); return; }
+  if(btn){ btn.disabled = true; btn.textContent = 'Checking…'; }
+  verifyKey(key).then(function(res){
+    if(!res.ok){ alert(res.reason); return; }
+    db.lic = {key:key, ok:true, checkedAt:Date.now(), email:res.email};
+    save(); render(); toast('Unlocked. Thank you!');
+  }, function(){
+    alert('Could not reach the payment service. Check your internet and try again.');
+  }).then(function(){
+    if(btn){ btn.disabled = false; btn.textContent = 'Unlock'; }
+  });
+}
+
+/* Quietly re-check a saved key once a day so cancelled subscriptions lock. */
+function backgroundCheck(){
+  var l = db.lic;
+  if(!l || !l.key || !CFG.productId) return;
+  if(Date.now() - (l.checkedAt||0) < RECHECK_MS) return;
+  verifyKey(l.key).then(function(res){
+    if(res.ok){ l.ok = true; l.checkedAt = Date.now(); }
+    else { l.ok = false; l.reason = res.reason; }
+    save(); render();
+  }, function(){ /* offline - keep the last good check until the grace runs out */ });
+}
+
+function subscribeBtn(cls){
+  return '<a class="btn '+(cls||'go')+'" href="'+esc(CFG.checkoutUrl)+'" target="_blank" rel="noopener">'+
+    'Subscribe &middot; '+esc(CFG.priceMonth||'')+' / month</a>';
+}
+function keyForm(sfx){
+  sfx = sfx || '';
+  return '<label>Licence key (from your receipt email)</label>'+
+    '<input id="lic_key'+sfx+'" placeholder="XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX" autocomplete="off" spellcheck="false">'+
+    '<button class="btn pri wide" id="lic_btn'+sfx+'" style="margin-top:10px" onclick="activate(\''+sfx+'\')">Unlock</button>';
+}
+
+function renderLock(){
+  var box = document.getElementById('lockBox');
+  var s = licState();
+  if(s.state === 'active' || s.state === 'free'){ box.innerHTML = ''; return; }
+
+  if(s.state === 'trial'){
+    box.innerHTML = '<div class="card" style="border-color:var(--accent)">'+
+      '<b>Free trial &middot; '+s.left+' day'+(s.left===1?'':'s')+' left</b>'+
+      '<div class="muted" style="margin-top:4px">After that you can still read and export your leads. Sending and adding needs a subscription ('+esc(CFG.priceMonth)+' '+esc(CFG.priceNote||'')+').</div>'+
+      '<div class="acts">'+subscribeBtn('go')+'</div>'+
+      '<details style="margin-top:10px"><summary class="muted">I already have a key</summary>'+keyForm()+'</details>'+
+    '</div>';
+    return;
+  }
+  var title = s.state==='stale' ? 'Connect to the internet once to keep going'
+            : s.state==='ended' ? 'Your subscription has ended'
+            : 'Your free trial is over';
+  var why = s.state==='stale'
+    ? 'We check your subscription about once a week. Go online and open this page, it unlocks by itself.'
+    : 'Your leads are safe. You can still read them and export a backup from Setup.';
+  box.innerHTML = '<div class="card" style="border-color:var(--danger)">'+
+    '<b>'+title+'</b>'+
+    '<div class="muted" style="margin-top:4px">'+why+'</div>'+
+    (s.state==='stale' ? '' : '<div class="acts">'+subscribeBtn('go')+'</div>')+
+    '<div style="margin-top:12px">'+keyForm()+'</div>'+
+    (CFG.supportEmail ? '<div class="muted" style="margin-top:10px">Help: '+esc(CFG.supportEmail)+'</div>' : '')+
+  '</div>';
+}
+function renderSub(){
+  var box = document.getElementById('subBox');
+  if(!box) return;
+  var s = licState(), l = db.lic;
+  if(s.state === 'active'){
+    box.innerHTML = '<b style="color:var(--accent2)">Active</b>'+
+      '<div class="muted" style="margin-top:4px">'+(l.email ? esc(l.email)+' &middot; ' : '')+'last checked '+new Date(l.checkedAt).toLocaleDateString()+'</div>'+
+      '<div class="muted" style="margin-top:6px">To cancel, use the link in your receipt email. The app stays unlocked until the paid month ends.</div>'+
+      '<button class="btn sm ghost" style="margin-top:10px" onclick="if(confirm(\'Remove the key from this device?\')){db.lic=null;save();render();}">Remove key from this device</button>';
+  } else if(s.state === 'free'){
+    box.innerHTML = '<b>Free early access</b><div class="muted" style="margin-top:4px">Everything is unlocked for now.</div>';
+  } else {
+    box.innerHTML = '<div class="muted">'+(s.state==='trial' ? 'Trial: '+s.left+' days left.' : 'Locked.')+'</div>'+
+      '<div class="acts">'+subscribeBtn('go')+'</div>'+keyForm('_s');
+  }
+}
+function lockStop(){
+  alert('Sending and adding are locked. Subscribe or paste your key at the top of Today. Your leads are safe.');
+  go('today');
+}
+
+/* ---------------- storage ---------------- */
+/* Some browsers block storage for files opened directly. If that happens we keep
+   working in memory and tell him loudly, so he never loses work silently. */
+var storageOK = (function(){
+  try{ localStorage.setItem('nudgebook.test','1'); localStorage.removeItem('nudgebook.test'); return true; }
+  catch(e){ return false; }
+})();
+
+function blankDb(){
+  return {leads:[], tpls:DEFAULT_TPLS.slice(), set:Object.assign({},DEFAULTS),
+          lic:null, trialStart:todayStr()};
+}
+function load(){
+  if(!storageOK) return blankDb();
+  try{
+    var raw = localStorage.getItem(KEY);
+    if(raw){
+      var d = JSON.parse(raw);
+      d.leads = d.leads || [];
+      d.tpls = (d.tpls && d.tpls.length) ? d.tpls : DEFAULT_TPLS.slice();
+      d.set = Object.assign({}, DEFAULTS, d.set || {});
+      d.lic = d.lic || null;
+      d.trialStart = d.trialStart || todayStr();
+      return d;
+    }
+  }catch(e){}
+  return blankDb();
+}
+function save(){
+  if(!storageOK) return;
+  try{ localStorage.setItem(KEY, JSON.stringify(db)); }
+  catch(e){
+    storageOK = false;
+    showWarn();
+    alert('Could not save. Your browser storage is full or blocked. Export a backup now.');
+  }
+}
+function showWarn(){
+  var w = document.getElementById('warn');
+  if(w) w.style.display = 'block';
+}
+
+/* ---------------- small helpers ---------------- */
+function uid(){ return Math.random().toString(36).slice(2,9) + (db.leads.length); }
+function todayStr(){ var d=new Date(); return ymd(d); }
+function ymd(d){
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function addDays(n){ var d=new Date(); d.setDate(d.getDate()+n); return ymd(d); }
+function daysBetween(a,b){ return Math.round((new Date(b)-new Date(a))/86400000); }
+function money(n){ return (db && db.set && db.set.cur != null ? db.set.cur : '$') + Number(n||0).toLocaleString(); }
+function esc(s){
+  return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function digits(p){ return String(p||'').replace(/[^0-9]/g,''); }
+/* "+44 7700..." and "0044..." are used as typed. Anything else gets your
+   country code, after dropping a leading trunk 0 (UK "07700..." style). */
+function waNumber(p){
+  var raw = String(p||'').trim();
+  var d = digits(raw);
+  if(!d) return '';
+  if(raw.charAt(0) === '+') return d;
+  if(d.slice(0,2) === '00') return d.slice(2);
+  d = d.replace(/^0+/, '');
+  if(d.length <= 10) d = (digits(db.set.cc) || '1') + d;
+  return d;
+}
+function toast(msg){
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('on');
+  clearTimeout(t._h); t._h = setTimeout(function(){ t.classList.remove('on'); }, 1900);
+}
+function cadence(){
+  var arr = String(db.set.cadence||'').split(',')
+    .map(function(x){ return parseInt(x,10); })
+    .filter(function(x){ return x>0; });
+  return arr.length ? arr : [2,4,7,14];
+}
+function stageName(id){
+  for(var i=0;i<STAGES.length;i++) if(STAGES[i].id===id) return STAGES[i].name;
+  return id;
+}
+
+/* ---------------- lead logic ---------------- */
+function touchCount(l){ return (l.touches||[]).length; }
+
+/* Schedule the next follow-up. The 1st touch uses the 1st gap, the 2nd the 2nd,
+   and once the gaps run out we stop nagging him about this lead. */
+function scheduleNext(l){
+  var c = cadence();
+  var i = touchCount(l) - 1;               // touches already includes the one just logged
+  if(i < 0 || i >= c.length){ l.nextAt = ''; }
+  else { l.nextAt = addDays(c[i]); }
+}
+
+function logTouch(l, type, note){
+  l.touches = l.touches || [];
+  l.touches.push({at:todayStr(), type:type, note:note||''});
+  l.lastTouchAt = todayStr();
+  if(l.stage === 'new') l.stage = 'contacted';
+  scheduleNext(l);
+  save();
+}
+
+function dueState(l){
+  if(l.stage==='won' || l.stage==='lost') return '';
+  if(!l.nextAt) return l.stage==='new' ? 'due' : '';
+  var d = daysBetween(todayStr(), l.nextAt);
+  if(d < 0) return 'late';
+  if(d === 0) return 'due';
+  return '';
+}
+function dueLabel(l){
+  if(l.stage==='won') return 'Won';
+  if(l.stage==='lost') return 'Dropped';
+  if(l.stage==='new' && !l.nextAt) return 'Contact now';
+  if(!l.nextAt) return 'No follow-up left';
+  var d = daysBetween(todayStr(), l.nextAt);
+  if(d < 0) return Math.abs(d)+'d late';
+  if(d === 0) return 'Today';
+  if(d === 1) return 'Tomorrow';
+  return 'In '+d+'d';
+}
+function isDueToday(l){
+  var s = dueState(l);
+  return s === 'due' || s === 'late';
+}
+
+/* ---------------- templates ---------------- */
+function saveHello(){
+  var me = document.getElementById('h_me').value.trim();
+  var biz = document.getElementById('h_biz').value.trim();
+  if(!me){ alert('Type your first name.'); return; }
+  db.set.me = me; db.set.mybiz = biz; save(); render(); toast('Saved');
+}
+function fill(text, l){
+  var s = db.set;
+  text = String(text||'');
+  if(!s.mybiz) text = text.replace(/ from \{mybiz\}/g, '');
+  return text
+    .replace(/\{name\}/g, l.name || 'there')
+    .replace(/\{business\}/g, l.business || l.name || 'your business')
+    .replace(/\{area\}/g, l.area || 'your area')
+    .replace(/\{me\}/g, s.me || 'me')
+    .replace(/\{mybiz\}/g, s.mybiz || '')
+    .replace(/\{price\}/g, money(l.value || s.price));
+}
+/* Pick the message that fits this lead right now.
+   Stage-specific messages win; otherwise walk down the in-order list. */
+function suggestTpl(l){
+  var t = db.tpls;
+  if(!t.length) return null;
+  for(var i=0;i<t.length;i++){
+    if(t[i].when && t[i].when!=='seq' && t[i].when===l.stage) return t[i];
+  }
+  var seq = t.filter(function(x){ return !x.when || x.when==='seq'; });
+  if(!seq.length) seq = t;
+  return seq[Math.min(touchCount(l), seq.length-1)];
+}
+
+/* ---------------- navigation ---------------- */
+function go(v){
+  view = v;
+  var views = document.querySelectorAll('.view');
+  for(var i=0;i<views.length;i++) views[i].classList.remove('on');
+  document.getElementById('v-'+v).classList.add('on');
+  var btns = document.querySelectorAll('nav button');
+  for(var j=0;j<btns.length;j++) btns[j].classList.toggle('on', btns[j].dataset.v===v);
+  window.scrollTo(0,0);
+  render();
+}
+
+/* ---------------- add leads ---------------- */
+function blankLead(o){
+  return {
+    id: uid(),
+    name: o.name || '',
+    business: o.business || '',
+    phone: o.phone || '',
+    area: o.area || '',
+    source: o.source || '',
+    value: o.value || db.set.price || 0,
+    notes: o.notes || '',
+    stage: 'new',
+    createdAt: todayStr(),
+    lastTouchAt: '',
+    nextAt: '',
+    touches: []
+  };
+}
+function addOne(){
+  if(isLocked()){ lockStop(); return; }
+  var name = document.getElementById('f_name').value.trim();
+  var biz  = document.getElementById('f_biz').value.trim();
+  if(!name && !biz){ alert('Write at least a name or a business.'); return; }
+  db.leads.unshift(blankLead({
+    name: name || biz,
+    business: biz,
+    phone: document.getElementById('f_phone').value.trim(),
+    area: document.getElementById('f_area').value.trim(),
+    value: parseInt(document.getElementById('f_value').value,10) || db.set.price,
+    source: document.getElementById('f_source').value.trim(),
+    notes: document.getElementById('f_notes').value.trim()
+  }));
+  save();
+  ['f_name','f_biz','f_phone','f_area','f_value','f_source','f_notes'].forEach(function(id){
+    document.getElementById(id).value = '';
+  });
+  toast('Lead added');
+  go('today');
+}
+function addBulk(){
+  if(isLocked()){ lockStop(); return; }
+  var box = document.getElementById('bulk');
+  var lines = box.value.split('\n');
+  var added = 0;
+  for(var i=0;i<lines.length;i++){
+    var line = lines[i].trim();
+    if(!line) continue;
+    var p = line.split(',').map(function(x){ return x.trim(); });
+    if(!p[0]) continue;
+    db.leads.unshift(blankLead({
+      name:p[0], phone:p[1]||'', business:p[2]||'', area:p[3]||'', source:'Imported list'
+    }));
+    added++;
+  }
+  if(!added){ alert('Nothing to import. Put one lead per line.'); return; }
+  save(); box.value = '';
+  toast(added + ' leads added');
+  go('leads');
+}
+
+/* ---------------- lead sheet ---------------- */
+function openLead(id){
+  var l = db.leads.filter(function(x){ return x.id===id; })[0];
+  if(!l) return;
+  var tpl = suggestTpl(l);
+  var msg = tpl ? fill(tpl.text, l) : '';
+  var wa = waNumber(l.phone);
+
+  var opts = '';
+  for(var i=0;i<STAGES.length;i++){
+    opts += '<option value="'+STAGES[i].id+'"'+(l.stage===STAGES[i].id?' selected':'')+'>'+STAGES[i].name+'</option>';
+  }
+  var tplOpts = db.tpls.map(function(t,i){
+    return '<option value="'+i+'"'+(tpl && t.id===tpl.id?' selected':'')+'>'+esc(t.label)+'</option>';
+  }).join('');
+
+  var hist = (l.touches||[]).slice().reverse().map(function(t){
+    return '<div class="hist">'+esc(t.at)+' &middot; '+esc(t.type)+(t.note?' &middot; '+esc(t.note):'')+'</div>';
+  }).join('') || '<div class="muted">Nothing yet. Send the first message.</div>';
+
+  document.getElementById('sheet').innerHTML =
+    '<h3>'+esc(l.name)+'</h3>'+
+    '<div class="muted">'+esc([l.business,l.area,l.phone].filter(Boolean).join(' · ') || 'No details')+'</div>'+
+
+    '<label>Message to send</label>'+
+    '<select id="m_tpl" onchange="reMsg(\''+l.id+'\')">'+tplOpts+'</select>'+
+    '<div class="msgbox" id="m_msg">'+esc(msg)+'</div>'+
+
+    (isLocked()
+      ? '<div class="acts"><button class="btn pri wide" onclick="closeModal();go(\'today\')">Unlock to send messages</button></div>'
+      : '<div class="acts">'+
+          (wa
+            ? '<a class="btn go" style="flex:1" target="_blank" rel="noopener" href="'+waLink(wa,msg)+'" onclick="afterSend(\''+l.id+'\',\'WhatsApp\')">Open WhatsApp</a>'
+            : '<button class="btn ghost" style="flex:1" onclick="alert(\'Add a phone number first.\')">No number</button>')+
+          '<button class="btn sm" onclick="copyMsg()">Copy text</button>'+
+        '</div>'+
+        '<div class="acts">'+
+          (wa ? '<a class="btn" style="flex:1" href="tel:+'+wa+'" onclick="afterSend(\''+l.id+'\',\'Called\')">Call</a>' : '')+
+          '<button class="btn" style="flex:1" onclick="afterSend(\''+l.id+'\',\'Met in person\')">Met them</button>'+
+        '</div>')+
+
+    '<label>Stage</label>'+
+    '<select id="m_stage" onchange="setStage(\''+l.id+'\',this.value)">'+opts+'</select>'+
+
+    '<div class="two">'+
+      '<div><label>Deal value</label>'+
+        '<input id="m_val" inputmode="numeric" value="'+esc(l.value)+'" onchange="setField(\''+l.id+'\',\'value\',parseInt(this.value,10)||0)"></div>'+
+      '<div><label>Next follow-up</label>'+
+        '<input id="m_next" type="date" value="'+esc(l.nextAt)+'" onchange="setField(\''+l.id+'\',\'nextAt\',this.value)"></div>'+
+    '</div>'+
+
+    '<label>Phone</label>'+
+    '<input value="'+esc(l.phone)+'" onchange="setField(\''+l.id+'\',\'phone\',this.value.trim())">'+
+    '<label>Notes</label>'+
+    '<textarea style="min-height:70px" onchange="setField(\''+l.id+'\',\'notes\',this.value)">'+esc(l.notes)+'</textarea>'+
+
+    '<label>History</label>'+hist+
+
+    '<div class="acts" style="margin-top:16px">'+
+      '<button class="btn go" onclick="setStage(\''+l.id+'\',\'won\')">Mark won</button>'+
+      '<button class="btn ghost" onclick="setStage(\''+l.id+'\',\'lost\')">Drop</button>'+
+    '</div>'+
+    '<button class="btn wide danger sm" style="margin-top:8px" onclick="delLead(\''+l.id+'\')">Delete lead</button>'+
+    '<button class="btn wide ghost" style="margin-top:8px" onclick="closeModal()">Close</button>';
+
+  document.getElementById('modal').classList.add('on');
+}
+function waLink(num, msg){
+  return 'https://wa.me/'+num+'?text='+encodeURIComponent(msg);
+}
+function reMsg(id){
+  var l = db.leads.filter(function(x){ return x.id===id; })[0];
+  var i = parseInt(document.getElementById('m_tpl').value,10);
+  var t = db.tpls[i];
+  if(!l || !t) return;
+  var msg = fill(t.text, l);
+  document.getElementById('m_msg').textContent = msg;
+  var link = document.querySelector('#sheet a.go');
+  if(link) link.href = waLink(waNumber(l.phone), msg);
+}
+function copyMsg(){
+  var txt = document.getElementById('m_msg').textContent;
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(function(){ toast('Message copied'); },
+      function(){ fallbackCopy(txt); });
+  } else fallbackCopy(txt);
+}
+function fallbackCopy(txt){
+  var ta = document.createElement('textarea');
+  ta.value = txt; document.body.appendChild(ta); ta.select();
+  try{ document.execCommand('copy'); toast('Message copied'); }catch(e){ alert(txt); }
+  document.body.removeChild(ta);
+}
+/* Called when he actually opens WhatsApp / calls / meets - counts as a touch. */
+function afterSend(id, type){
+  var l = db.leads.filter(function(x){ return x.id===id; })[0];
+  if(!l) return;
+  logTouch(l, type, '');
+  toast('Logged. Next follow-up ' + (l.nextAt ? 'on '+l.nextAt : 'not needed'));
+  closeModal(); render();
+}
+function setStage(id, stage){
+  var l = db.leads.filter(function(x){ return x.id===id; })[0];
+  if(!l) return;
+  l.stage = stage;
+  if(stage==='won' || stage==='lost'){ l.nextAt = ''; }
+  else if(stage==='meeting' || stage==='quoted'){ if(!l.nextAt) l.nextAt = addDays(2); }
+  save(); closeModal(); render();
+  if(stage==='won') toast('Nice. ' + money(l.value) + ' added.');
+}
+function setField(id, field, val){
+  var l = db.leads.filter(function(x){ return x.id===id; })[0];
+  if(!l) return;
+  l[field] = val; save(); render();
+}
+function delLead(id){
+  if(!confirm('Delete this lead for good?')) return;
+  db.leads = db.leads.filter(function(x){ return x.id!==id; });
+  save(); closeModal(); render(); toast('Deleted');
+}
+function closeModal(){ document.getElementById('modal').classList.remove('on'); }
+
+/* ---------------- rendering ---------------- */
+function leadCard(l){
+  var st = dueState(l);
+  var cls = 'lead' + (st ? ' '+st : '') + (l.stage==='won'?' won':'') + (l.stage==='lost'?' lost':'');
+  var pill = 'pill' + (st ? ' '+st : '') + (l.stage==='won'?' won':'');
+  var sub = [l.business, l.area].filter(Boolean).join(' · ') || stageName(l.stage);
+  return '<div class="'+cls+'" onclick="openLead(\''+l.id+'\')">'+
+    '<div class="row">'+
+      '<div class="grow trunc">'+
+        '<h3 class="trunc">'+esc(l.name)+'</h3>'+
+        '<div class="sub trunc">'+esc(sub)+'</div>'+
+      '</div>'+
+      '<div class="'+pill+'">'+esc(dueLabel(l))+'</div>'+
+    '</div></div>';
+}
+
+function renderToday(){
+  document.getElementById('hello').style.display = db.set.me ? 'none' : 'block';
+  var open = db.leads.filter(function(l){ return OPEN_STAGES.indexOf(l.stage)>=0; });
+  // Overdue follow-ups first (warmest), then today's, then people never contacted.
+  var rank = function(l){ return dueState(l)==='late' ? 0 : (l.nextAt ? 1 : 2); };
+  var due = open.filter(isDueToday).sort(function(a,b){
+    var r = rank(a) - rank(b);
+    return r !== 0 ? r : ((a.nextAt||'') < (b.nextAt||'') ? -1 : 1);
+  });
+  var soon = open.filter(function(l){ return !isDueToday(l) && l.nextAt; })
+    .sort(function(a,b){ return a.nextAt < b.nextAt ? -1 : 1; }).slice(0,6);
+
+  document.getElementById('todayList').innerHTML = due.length
+    ? due.map(leadCard).join('')
+    : '<div class="empty"><span class="big">&#10003;</span>' +
+      (db.leads.length ? 'Nobody to chase today. Add new leads.' : 'No leads yet. Tap <b>Add</b> and put in 10 names.') +
+      '</div>';
+
+  document.getElementById('soonList').innerHTML = soon.length
+    ? soon.map(leadCard).join('')
+    : '<div class="muted" style="padding:4px 2px">Nothing scheduled.</div>';
+
+  // goal bar
+  var won = db.leads.filter(function(l){ return l.stage==='won'; });
+  var earned = won.reduce(function(s,l){ return s + (Number(l.value)||0); }, 0);
+  var goal = Number(db.set.goal)||0;
+  var pct = goal ? Math.min(100, Math.round(earned/goal*100)) : 0;
+  document.getElementById('goalLine').textContent = money(earned) + ' / ' + money(goal);
+  document.getElementById('goalBar').style.width = pct + '%';
+  document.getElementById('hMoney').textContent = money(earned);
+
+  var hint = '';
+  var left = Math.max(0, goal - earned);
+  var price = Number(db.set.price)||0;
+  if(left <= 0 && goal) hint = 'Goal reached. Raise it.';
+  else if(price) {
+    var need = Math.ceil(left/price);
+    hint = need + ' more sale' + (need===1?'':'s') + ' at ' + money(price);
+    if(db.set.deadline){
+      var d = daysBetween(todayStr(), db.set.deadline);
+      hint += d > 0 ? ' · ' + d + ' days left' : (d===0 ? ' · last day' : ' · deadline passed');
+    }
+  }
+  document.getElementById('goalHint').textContent = hint;
+}
+
+function renderLeads(){
+  var q = document.getElementById('search').value.toLowerCase().trim();
+  var chips = [{id:'open',name:'Active'},{id:'due',name:'Due now'}]
+    .concat(STAGES).concat([{id:'all',name:'All'}]);
+  document.getElementById('stageChips').innerHTML = chips.map(function(c){
+    return '<button class="chip'+(filter===c.id?' on':'')+'" onclick="filter=\''+c.id+'\';render()">'+esc(c.name)+'</button>';
+  }).join('');
+
+  var list = db.leads.filter(function(l){
+    if(filter==='open') return OPEN_STAGES.indexOf(l.stage)>=0;
+    if(filter==='due') return isDueToday(l);
+    if(filter!=='all') return l.stage===filter;
+    return true;
+  });
+  if(q){
+    list = list.filter(function(l){
+      return (l.name+' '+l.business+' '+l.area+' '+l.phone+' '+l.notes).toLowerCase().indexOf(q) >= 0;
+    });
+  }
+  list.sort(function(a,b){
+    var A = isDueToday(a)?0:1, B = isDueToday(b)?0:1;
+    if(A!==B) return A-B;
+    return (a.nextAt||'9999') < (b.nextAt||'9999') ? -1 : 1;
+  });
+  document.getElementById('leadList').innerHTML = list.length
+    ? list.map(leadCard).join('')
+    : '<div class="empty"><span class="big">&#9675;</span>Nothing here.</div>';
+}
+
+function renderMoney(){
+  var won = db.leads.filter(function(l){ return l.stage==='won'; });
+  var earned = won.reduce(function(s,l){ return s+(Number(l.value)||0); },0);
+  var open = db.leads.filter(function(l){ return OPEN_STAGES.indexOf(l.stage)>=0; });
+  var pipeline = open.reduce(function(s,l){ return s+(Number(l.value)||0); },0);
+  var contacted = db.leads.filter(function(l){ return l.stage!=='new'; }).length;
+  var rate = contacted ? Math.round(won.length/contacted*100) : 0;
+
+  document.getElementById('kpis').innerHTML =
+    kpi(money(earned), 'Earned') +
+    kpi(money(pipeline), 'In pipeline') +
+    kpi(won.length, 'Deals won') +
+    kpi(rate + '%', 'Close rate');
+
+  document.getElementById('funnel').innerHTML = STAGES.map(function(s){
+    var n = db.leads.filter(function(l){ return l.stage===s.id; }).length;
+    return '<div><span>'+esc(s.name)+'</span><b>'+n+'</b></div>';
+  }).join('');
+
+  document.getElementById('wonList').innerHTML = won.length
+    ? won.map(leadCard).join('')
+    : '<div class="muted" style="padding:4px 2px">No wins yet. Every no gets you closer.</div>';
+}
+function kpi(v,l){ return '<div class="kpi"><b>'+esc(v)+'</b><span>'+esc(l)+'</span></div>'; }
+
+function renderSetup(){
+  var s = db.set;
+  var m = {s_me:s.me, s_mybiz:s.mybiz, s_cc:s.cc, s_cur:s.cur, s_price:s.price, s_goal:s.goal,
+           s_deadline:s.deadline, s_cadence:s.cadence, s_accent:s.accent};
+  for(var id in m){
+    var el = document.getElementById(id);
+    if(el && document.activeElement !== el) el.value = m[id];
+  }
+  var whens = [{id:'seq',name:'In order (chase sequence)'},{id:'replied',name:'When they reply'},
+               {id:'meeting',name:'When a meeting is set'},{id:'quoted',name:'When price is given'},
+               {id:'won',name:'After they say yes'}];
+  document.getElementById('tplList').innerHTML = db.tpls.map(function(t,i){
+    var opts = whens.map(function(w){
+      return '<option value="'+w.id+'"'+((t.when||'seq')===w.id?' selected':'')+'>'+w.name+'</option>';
+    }).join('');
+    return '<div class="card">'+
+      '<input value="'+esc(t.label)+'" onchange="db.tpls['+i+'].label=this.value;save();render()">'+
+      '<label>Use this</label>'+
+      '<select onchange="db.tpls['+i+'].when=this.value;save()">'+opts+'</select>'+
+      '<textarea style="margin-top:8px" onchange="db.tpls['+i+'].text=this.value;save()">'+esc(t.text)+'</textarea>'+
+      '<button class="btn sm ghost" style="margin-top:8px" onclick="delTpl('+i+')">Remove</button>'+
+    '</div>';
+  }).join('');
+}
+function newTpl(){
+  db.tpls.push({id:'t'+Date.now(), when:'seq', label:'New message', text:'Hello {name}, '});
+  save(); render();
+}
+function delTpl(i){
+  if(!confirm('Remove this message?')) return;
+  db.tpls.splice(i,1); save(); render();
+}
+function saveSetup(){
+  var s = db.set;
+  s.me = val('s_me'); s.mybiz = val('s_mybiz'); s.cc = val('s_cc');
+  s.price = parseInt(val('s_price'),10)||0;
+  s.goal = parseInt(val('s_goal'),10)||0;
+  s.deadline = val('s_deadline'); s.cadence = val('s_cadence');
+  s.cur = val('s_cur'); s.accent = val('s_accent');
+  save(); paintBrand(); renderToday();
+}
+function val(id){ var e = document.getElementById(id); return e ? e.value : ''; }
+
+function paintBrand(){
+  var s = db.set;
+  document.documentElement.style.setProperty('--accent', s.accent || '#ff7a1a');
+  document.getElementById('brandSub').textContent = s.mybiz ? s.mybiz + ' · follow-ups' : 'Follow up. Get paid.';
+}
+
+function render(){
+  paintBrand();
+  renderLock();
+  renderToday();
+  if(view==='leads') renderLeads();
+  if(view==='money') renderMoney();
+  if(view==='setup'){ renderSetup(); renderSub(); }
+}
+
+/* ---------------- backup ---------------- */
+function exportData(){
+  download('nudgebook-backup-'+todayStr()+'.json', JSON.stringify(db,null,2), 'application/json');
+}
+function exportCsv(){
+  var head = 'Name,Business,Phone,Area,Stage,Value,Next follow-up,Times contacted,Notes\n';
+  var rows = db.leads.map(function(l){
+    return [l.name,l.business,l.phone,l.area,stageName(l.stage),l.value,l.nextAt,touchCount(l),l.notes]
+      .map(function(x){ return '"'+String(x==null?'':x).replace(/"/g,'""')+'"'; }).join(',');
+  }).join('\n');
+  download('leads-'+todayStr()+'.csv', head+rows, 'text/csv');
+}
+function download(name, text, type){
+  var b = new Blob([text], {type:type});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(b); a.download = name;
+  document.body.appendChild(a); a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); document.body.removeChild(a); }, 500);
+  toast('Saved to downloads');
+}
+function importData(input){
+  var f = input.files[0]; if(!f) return;
+  var r = new FileReader();
+  r.onload = function(){
+    try{
+      var d = JSON.parse(r.result);
+      if(!d.leads) throw new Error('bad file');
+      if(!confirm('This replaces your current data with the backup. Continue?')) return;
+      db = {leads:d.leads, tpls:(d.tpls&&d.tpls.length)?d.tpls:DEFAULT_TPLS.slice(),
+            set:Object.assign({},DEFAULTS,d.set||{}), lic:db.lic, trialStart:db.trialStart};
+      save(); render(); toast('Backup restored');
+    }catch(e){ alert('That file is not a Nudgebook backup.'); }
+    input.value = '';
+  };
+  r.readAsText(f);
+}
+function wipe(){
+  if(!confirm('Delete every lead and setting? This cannot be undone.')) return;
+  if(!confirm('Really sure? Export a backup first if you want to keep it.')) return;
+  localStorage.removeItem(KEY);
+  db = load(); render(); go('today'); toast('Cleared');
+}
+
+/* ---------------- start ---------------- */
+if(!storageOK) showWarn();
+render();
+backgroundCheck();
+window.addEventListener('online', backgroundCheck);
+if('serviceWorker' in navigator && location.protocol === 'https:'){
+  navigator.serviceWorker.register('sw.js').catch(function(){});
+}
+</script>
+</body>
+</html>

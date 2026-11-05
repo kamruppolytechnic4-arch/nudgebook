@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nudgebook — WhatsApp follow-up reminders for small businesses</title>
+<meta name="description" content="Stop losing customers you forgot to reply to. Nudgebook shows who to follow up with today and opens WhatsApp with the message already typed. No signup. Free 14-day trial.">
+<link rel="canonical" href="https://kamruppolytechnic4-arch.github.io/nudgebook/">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Nudgebook — follow-up reminders for people who sell on WhatsApp">
+<meta property="og:description" content="Who to follow up with today, with the WhatsApp message already typed. No signup.">
+<meta property="og:image" content="https://kamruppolytechnic4-arch.github.io/nudgebook/og.png">
+<meta property="og:url" content="https://kamruppolytechnic4-arch.github.io/nudgebook/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0f1720">
+<script src="config.js"></script>
+<style>
+:root{
+  --bg:#ffffff; --bg2:#f5f7fa; --ink:#0f1720; --ink2:#46566a; --line:#e2e8f0;
+  --accent:#ff7a1a; --accentInk:#12202c; --go:#00a870; --card:#ffffff;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#0f1720; --bg2:#151f2b; --ink:#e8eef6; --ink2:#9fb1c4; --line:#263445; --card:#18222e; --go:#00c281; }
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+a{color:inherit}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+header.top{display:flex;align-items:center;gap:10px;padding:16px 0}
+.logo{width:34px;height:34px}
+.brand{font-weight:800;font-size:19px;text-decoration:none}
+.top nav{margin-left:auto;display:flex;gap:18px;font-size:14px;color:var(--ink2)}
+.top nav a{text-decoration:none}
+@media(max-width:560px){ .top nav .hide-s{display:none} }
+
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;padding:40px 0 56px}
+@media(max-width:820px){ .hero{grid-template-columns:1fr;padding-top:16px} }
+h1{font-size:clamp(32px,5vw,52px);line-height:1.08;margin:0 0 16px;letter-spacing:-.5px}
+.lead{font-size:19px;color:var(--ink2);margin:0 0 26px;max-width:34em}
+.cta{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:var(--accentInk);
+  font-weight:800;padding:15px 24px;border-radius:12px;text-decoration:none;font-size:17px}
+.cta:hover{filter:brightness(1.05)}
+.ghost{display:inline-block;margin-left:14px;font-weight:600;color:var(--ink2)}
+.small{font-size:13.5px;color:var(--ink2);margin-top:12px}
+
+/* phone mock — drawn in CSS, shows the real Today screen */
+.phone{background:#0f1720;border-radius:30px;padding:14px;max-width:340px;margin:0 auto;
+  box-shadow:0 30px 60px -20px rgba(15,23,32,.45);border:1px solid #263445;color:#e8eef6;font-size:14px}
+.ph-h{display:flex;align-items:center;gap:8px;padding:6px 6px 12px;border-bottom:1px solid #2a3a4d}
+.ph-h b{font-size:15px}
+.ph-h span{margin-left:auto;color:#00c281;font-weight:800}
+.ph-t{font-size:12px;color:#8fa3b8;margin:12px 6px 6px;font-weight:700;letter-spacing:.4px}
+.ph-c{background:#18222e;border:1px solid #2a3a4d;border-left:3px solid #ff4d5e;border-radius:12px;padding:10px 12px;margin:0 0 8px;display:flex;align-items:center}
+.ph-c.d{border-left-color:#ff7a1a}
+.ph-c small{display:block;color:#8fa3b8;font-size:11.5px}
+.ph-c i{margin-left:auto;font-style:normal;font-size:10px;font-weight:800;padding:3px 8px;border-radius:20px;background:rgba(255,77,94,.16);color:#ff4d5e}
+.ph-c.d i{background:rgba(255,122,26,.16);color:#ff7a1a}
+.ph-m{background:#1f2b3a;border:1px dashed #2a3a4d;border-radius:10px;padding:10px;font-size:12.5px;margin:10px 0 8px;white-space:pre-line}
+.ph-b{background:#00c281;color:#07231a;text-align:center;font-weight:800;border-radius:10px;padding:10px}
+
+section{padding:56px 0;border-top:1px solid var(--line)}
+h2{font-size:clamp(24px,3.4vw,34px);margin:0 0 10px;letter-spacing:-.3px}
+.sub{color:var(--ink2);margin:0 0 30px;max-width:40em}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media(max-width:820px){ .grid3{grid-template-columns:1fr} }
+.box{background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:22px}
+.box b.n{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--accentInk);margin-bottom:10px}
+.box h3{margin:0 0 6px;font-size:18px}
+.box p{margin:0;color:var(--ink2);font-size:15px}
+
+.who{display:flex;flex-wrap:wrap;gap:10px}
+.who span{border:1px solid var(--line);border-radius:30px;padding:8px 16px;font-size:15px;background:var(--bg2)}
+
+.price{max-width:440px;margin:0 auto;text-align:center;background:var(--card);border:2px solid var(--accent);border-radius:20px;padding:30px 24px}
+.price .amt{font-size:48px;font-weight:800;line-height:1}
+.price ul{text-align:left;margin:22px 0;padding:0;list-style:none}
+.price li{padding:7px 0 7px 28px;position:relative;border-bottom:1px solid var(--line)}
+.price li:before{content:"✓";position:absolute;left:4px;color:var(--go);font-weight:800}
+
+details{border-bottom:1px solid var(--line);padding:14px 0}
+summary{cursor:pointer;font-weight:700;font-size:17px}
+details p{color:var(--ink2);margin:10px 0 0}
+
+.tools a{display:block;text-decoration:none}
+.tools a:hover h3{text-decoration:underline}
+footer{padding:30px 0 50px;color:var(--ink2);font-size:14px;border-top:1px solid var(--line)}
+footer a{margin-right:16px}
+</style>
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"SoftwareApplication",
+  "name":"Nudgebook",
+  "applicationCategory":"BusinessApplication",
+  "operatingSystem":"Any (web browser)",
+  "description":"Follow-up reminder app for small businesses and freelancers who sell on WhatsApp. Shows who to follow up with today and opens WhatsApp with the message already typed.",
+  "url":"https://kamruppolytechnic4-arch.github.io/nudgebook/",
+  "offers":{"@type":"Offer","price":"4","priceCurrency":"USD"}
+}
+</script>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <img class="logo" src="icon.svg" alt="">
+    <a class="brand" href="./">Nudgebook</a>
+    <nav>
+      <a href="tools/whatsapp-link-generator/" class="hide-s">Free WhatsApp link tool</a>
+      <a href="#pricing">Pricing</a>
+      <a href="app/">Open app</a>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <div>
+      <h1>Most sales are lost because nobody followed up.</h1>
+      <p class="lead">Nudgebook tells you who to message today and opens WhatsApp with the message already typed. You press send. It reminds you again in 2, 4, 7 and 14 days, then stops.</p>
+      <a class="cta" href="app/">Start free — no signup</a>
+      <a class="ghost" href="#how">See how it works</a>
+      <div class="small">Free for 14 days. Your customer list stays on your phone. Nothing to install.</div>
+    </div>
+    <div class="phone" aria-label="Picture of the Nudgebook Today screen">
+      <div class="ph-h"><img src="icon.svg" width="24" height="24" alt=""><b>Nudgebook</b><span>$2,350 won</span></div>
+      <div class="ph-t">CONTACT THESE TODAY</div>
+      <div class="ph-c"><div>Maria Lopez<small>Wedding cake quote · Downtown</small></div><i>3D LATE</i></div>
+      <div class="ph-c d"><div>Sam Okafor<small>500 flyers · Ikeja</small></div><i>TODAY</i></div>
+      <div class="ph-c d"><div>Priya Shah<small>Event décor · Andheri</small></div><i>TODAY</i></div>
+      <div class="ph-m">Hi Maria, did you get a chance to look at the quote for $450?
+If anything needs changing, tell me and I will sort it.</div>
+      <div class="ph-b">Open WhatsApp</div>
+    </div>
+  </div>
+</div>
+
+<section id="how">
+  <div class="wrap">
+    <h2>Three taps a day</h2>
+    <p class="sub">No CRM to learn. No team plan. Just the list of people who are waiting on you.</p>
+    <div class="grid3">
+      <div class="box"><b class="n">1</b><h3>Add who asked</h3><p>Type a name and number, or paste a whole list at once. Takes seconds.</p></div>
+      <div class="box"><b class="n">2</b><h3>Open “Today”</h3><p>Late follow-ups first, then today’s, then people you never messaged. Nothing slips.</p></div>
+      <div class="box"><b class="n">3</b><h3>Tap, send, done</h3><p>WhatsApp opens with the right message for that stage. Nudgebook logs it and schedules the next one.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Made for people who sell one chat at a time</h2>
+    <p class="sub">If customers ask you for a price on WhatsApp and then go quiet, this is for you.</p>
+    <div class="who">
+      <span>Home bakers</span><span>Photographers</span><span>Event planners</span><span>Tutors</span>
+      <span>Real estate agents</span><span>Printing shops</span><span>Freelancers</span><span>Tailors &amp; boutiques</span>
+      <span>Travel agents</span><span>Contractors</span><span>Instagram sellers</span><span>Coaches</span>
+    </div>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="wrap">
+    <h2 style="text-align:center">One plan</h2>
+    <p class="sub" style="text-align:center;margin-left:auto;margin-right:auto">If it brings back one customer a year, it has paid for itself.</p>
+    <div class="price">
+      <div class="amt"><span id="pAmt">$4</span></div>
+      <div class="small" id="pNote">per month · cancel any time</div>
+      <ul>
+        <li>Unlimited leads and messages</li>
+        <li>Your own message templates</li>
+        <li>Auto follow-up schedule</li>
+        <li>Won deals and money tracker</li>
+        <li>Works offline, add to home screen</li>
+        <li>Backup and CSV export</li>
+      </ul>
+      <a class="cta" href="app/" style="width:100%;justify-content:center">Try free for 14 days</a>
+      <div class="small">No card needed to start.</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap tools">
+    <h2>Free tools</h2>
+    <p class="sub">Use them as much as you like. No signup.</p>
+    <div class="grid3">
+      <a class="box" href="tools/whatsapp-link-generator/"><h3>WhatsApp link generator</h3><p>Make a wa.me click-to-chat link with a pre-filled message. Or turn a whole list of numbers into links at once.</p></a>
+      <a class="box" href="tools/follow-up-message-templates/"><h3>Follow-up message templates</h3><p>20 short WhatsApp messages for chasing a quote, a payment or a quiet customer — copy in one tap.</p></a>
+      <a class="box" href="app/"><h3>Nudgebook app</h3><p>The daily follow-up list. 14 days free.</p></a>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap" style="max-width:760px">
+    <h2>Questions</h2>
+    <details><summary>Does Nudgebook send WhatsApp messages for me?</summary><p>No, and that is on purpose. It opens WhatsApp with the message typed and you press send. WhatsApp bans numbers that send automated messages, so your number stays safe.</p></details>
+    <details><summary>Where is my customer list stored?</summary><p>Only on your own device, inside your browser. We never see it. Use “Export backup” in Setup to keep a copy or move to a new phone.</p></details>
+    <details><summary>Do I need to create an account?</summary><p>No. Open the app and start. If you subscribe, you get a licence key by email that unlocks it.</p></details>
+    <details><summary>Does it work on my phone?</summary><p>Yes. Open it in Chrome or Safari and choose “Add to Home screen”. It works like an app, even without internet.</p></details>
+    <details><summary>What happens after the free trial?</summary><p>Your leads stay safe and you can still read and export them. Adding and sending need a subscription.</p></details>
+    <details><summary>How do I cancel?</summary><p>Use the link in your receipt email. No calls, no questions.</p></details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <a href="app/">Open the app</a>
+    <a href="tools/whatsapp-link-generator/">WhatsApp link generator</a>
+    <a href="tools/follow-up-message-templates/">Follow-up templates</a>
+    <a href="privacy.html">Privacy</a>
+    <div style="margin-top:12px">Nudgebook is not affiliated with WhatsApp or Meta.</div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var c = window.NUDGE || {};
+  if(c.priceMonth) document.getElementById('pAmt').textContent = c.priceMonth;
+  if(c.priceNote) document.getElementById('pNote').textContent = c.priceNote;
+})();
+</script>
+</body>
+</html>

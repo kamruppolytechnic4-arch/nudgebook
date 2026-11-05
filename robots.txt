@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Disallow: /nudgebook/app/
+Sitemap: https://kamruppolytechnic4-arch.github.io/nudgebook/sitemap.xml
